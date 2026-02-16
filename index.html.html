@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AB DRIDI — Comptabilité</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f5f9;
+  --card: #ffffff;
+  --primary: #4a6cf7;
+  --primary-light: #eef1ff;
+  --accent: #6c5ce7;
+  --green: #2ed573;
+  --green-dark: #155724;
+  --green-bg: #d4edda;
+  --red: #ff4757;
+  --red-dark: #721c24;
+  --red-bg: #f8d7da;
+  --pink: #e84393;
+  --orange: #ffa502;
+  --yellow-bg: #fff3cd;
+  --yellow-text: #856404;
+  --text: #1a1a2e;
+  --text-light: #666;
+  --text-muted: #999;
+  --border: #eee;
+  --border-light: #f0f0f0;
+  --shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.03);
+  --shadow-hover: 0 4px 24px rgba(0,0,0,0.1);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-pill: 20px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #fff; padding: 16px 32px; display: flex; justify-content: space-between;
+  align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  position: sticky; top: 0; z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.header-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; letter-spacing: 1px;
+}
+.header-title { font-weight: 800; font-size: 19px; letter-spacing: 0.5px; }
+.header-sub { font-size: 11px; opacity: 0.55; letter-spacing: 0.8px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.header-right span { font-size: 13px; opacity: 0.7; }
+.year-select {
+  background: rgba(255,255,255,0.12); color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px; padding: 7px 14px; font-size: 14px;
+  font-family: inherit; outline: none; cursor: pointer;
+}
+.year-select option { color: #000; }
+
+.nav {
+  display: flex; gap: 2px; padding: 0 24px;
+  background: var(--card); border-bottom: 1px solid var(--border);
+  overflow-x: auto; position: sticky; top: 76px; z-index: 99;
+}
+.nav-btn {
+  padding: 14px 22px; border: none; background: none; cursor: pointer;
+  font-size: 13.5px; font-weight: 500; font-family: inherit;
+  color: #777; border-bottom: 3px solid transparent;
+  transition: all .2s; white-space: nowrap;
+}
+.nav-btn.active { color: var(--primary); font-weight: 700; border-bottom-color: var(--primary); }
+.nav-btn:hover:not(.active) { color: #555; }
+.nav-badge {
+  margin-left: 8px; background: var(--red); color: #fff;
+  border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: 700;
+}
+
+.main { padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+
+.card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 22px 26px; box-shadow: var(--shadow);
+  border: 1px solid var(--border-light);
+  transition: box-shadow .2s, transform .15s;
+}
+.card.clickable:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); cursor: pointer; }
+
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat-card { flex: 1 1 200px; min-width: 180px; }
+.stat-label { font-size: 11.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+.stat-value { font-size: 26px; font-weight: 800; }
+.stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.stat-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.stat-icon { font-size: 28px; opacity: 0.15; }
+
+.btn {
+  padding: 10px 22px; border-radius: var(--radius-sm); font-size: 14px;
+  font-weight: 600; cursor: pointer; transition: all .2s; font-family: inherit;
+  border: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-secondary { background: #f5f5f5; color: #333; border: 1px solid #e0e0e0; }
+.btn-success { background: var(--green); color: #fff; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-btn {
+  padding: 7px 16px; border-radius: var(--radius-pill);
+  border: 1.5px solid #e0e0e0; background: #fff; color: #666;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  transition: all .15s;
+}
+.filter-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+
+.badge {
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+  display: inline-block; margin-left: 8px;
+}
+.badge-brouillon { background: #e2e3e5; color: #383d41; }
+.badge-envoyee { background: #cce5ff; color: #004085; }
+.badge-payee { background: var(--green-bg); color: var(--green-dark); }
+.badge-en_retard { background: var(--red-bg); color: var(--red-dark); }
+.badge-annulee { background: #ffeaa7; color: var(--yellow-text); }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 1000; display: flex; align-items: center;
+  justify-content: center; padding: 20px; backdrop-filter: blur(4px);
+  animation: fadeIn .2s;
+}
+.modal {
+  background: #fff; border-radius: 16px; padding: 28px 32px;
+  width: 100%; max-width: 640px; max-height: 85vh; overflow: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18); animation: slideUp .25s;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-size: 20px; font-weight: 700; color: var(--text); }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #999; padding: 4px 8px; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 13px; font-weight: 600; color: #555; display: block; margin-bottom: 5px; }
+.form-input, .form-select {
+  width: 100%; padding: 10px 14px; border-radius: var(--radius-sm);
+  border: 1.5px solid #e0e0e0; font-size: 14px; outline: none;
+  font-family: inherit; transition: border-color .2s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--primary); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+.checkbox-row { display: flex; align-items: center; gap: 8px; padding-top: 22px; }
+.checkbox-row label { font-size: 13px; font-weight: 600; color: #555; }
+
+.invoice-card { padding: 16px 22px; margin-bottom: 10px; }
+.invoice-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.invoice-left { flex: 1; min-width: 200px; }
+.invoice-num { font-weight: 800; font-size: 15px; color: var(--text); }
+.invoice-client { font-size: 13px; color: var(--text-light); }
+.invoice-meta { font-size: 12px; color: var(--text-muted); }
+.invoice-amount { font-size: 20px; font-weight: 800; color: var(--text); text-align: right; }
+.invoice-amount-detail { font-size: 11px; color: var(--text-muted); }
+.invoice-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+
+.expense-row { display: flex; justify-content: space-between; align-items: center; }
+.expense-desc { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.expense-meta { font-size: 12px; color: var(--text-muted); }
+.expense-amount { font-weight: 800; font-size: 16px; color: var(--pink); }
+.del-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #ccc; transition: color .2s; }
+.del-btn:hover { color: var(--red); }
+
+.cat-bar-bg { height: 8px; background: #f0f0f0; border-radius: 8px; }
+.cat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--pink), #fd79a8); border-radius: 8px; transition: width .4s; }
+
+.client-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+.client-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; }
+.client-stat-box { background: var(--bg); padding: 8px 10px; border-radius: 8px; }
+.client-stat-label { color: var(--text-muted); }
+.client-stat-value { font-weight: 700; font-size: 14px; }
+
+.progress-bg { height: 10px; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; transition: width .5s; }
+
+.chart-container { display: flex; align-items: flex-end; gap: 6px; height: 180px; }
+.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.chart-bars { display: flex; gap: 2px; align-items: flex-end; height: 150px; width: 100%; }
+.chart-bar { flex: 1; border-radius: 4px 4px 0 0; transition: height .4s; min-width: 4px; }
+.chart-bar-income { background: linear-gradient(180deg, #4a6cf7, #6c5ce7); }
+.chart-bar-expense { background: linear-gradient(180deg, #ff6b81, #e84393); }
+.chart-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+.chart-legend { display: flex; gap: 20px; margin-top: 14px; justify-content: center; }
+.chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-light); }
+.chart-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+
+.cf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cf-table th { text-align: right; padding: 10px 12px; font-weight: 600; }
+.cf-table th:first-child { text-align: left; }
+.cf-table td { padding: 10px 12px; text-align: right; }
+.cf-table td:first-child { text-align: left; font-weight: 600; }
+.cf-table thead tr { border-bottom: 2px solid var(--border); }
+.cf-table tbody tr { border-bottom: 1px solid #f5f5f5; }
+.cf-table tfoot tr { border-top: 2px solid #ddd; font-weight: 800; }
+.th-green { color: var(--green); }
+.th-pink { color: var(--pink); }
+
+.result-banner { text-align: center; margin-bottom: 24px; border-radius: var(--radius); padding: 24px; }
+.result-banner.positive { background: linear-gradient(135deg, #d4edda, #c3e6cb); }
+.result-banner.negative { background: linear-gradient(135deg, #f8d7da, #f5c6cb); }
+.result-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.result-value { font-size: 36px; font-weight: 800; }
+.result-detail { font-size: 12px; margin-top: 4px; }
+
+.payment-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 6px;
+}
+.payment-row.late { background: #fff5f5; }
+.payment-row.ok { background: var(--bg); }
+.payment-name { font-weight: 600; font-size: 14px; }
+.payment-due { font-size: 12px; color: var(--text-muted); }
+.payment-amount { font-weight: 700; font-size: 15px; }
+.payment-days { font-size: 11px; }
+.payment-days.late { color: var(--red); font-weight: 700; }
+
+.tva-warning {
+  background: var(--yellow-bg); border: 1px solid #ffc107;
+  border-radius: 12px; padding: 12px 18px; margin-bottom: 16px;
+  font-size: 13px; color: var(--yellow-text); font-weight: 500;
+}
+
+.empty { text-align: center; padding: 40px; color: var(--text-muted); }
+.empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+.ligne-row { display: flex; gap: 8px; margin-bottom: 6px; align-items: center; }
+.ligne-input { padding: 8px 12px; border-radius: 8px; border: 1.5px solid #e0e0e0; font-size: 13px; font-family: inherit; }
+.ligne-desc { flex: 3; }
+.ligne-num { flex: 1; text-align: center; }
+.ligne-total { flex: 1; font-size: 13px; font-weight: 700; text-align: right; }
+.ligne-del { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--red); }
+.add-ligne-btn {
+  background: none; border: 1.5px dashed #ccc; border-radius: 8px;
+  padding: 8px 16px; width: 100%; cursor: pointer; font-size: 13px;
+  color: #888; font-family: inherit; margin-top: 4px; transition: border-color .2s;
+}
+.add-ligne-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+.totals-box { background: var(--bg); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 18px; }
+.totals-row { display: flex; justify-content: space-between; font-size: 14px; margin-top: 4px; }
+.totals-row:first-child { margin-top: 0; }
+.totals-total { font-size: 18px; font-weight: 800; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0; }
+
+/* ─── Backup section ─── */
+.backup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.backup-card { padding: 30px; text-align: center; }
+.backup-icon { font-size: 48px; margin-bottom: 14px; }
+.backup-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.backup-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5; }
+.backup-status { margin-top: 24px; }
+.backup-status-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 16px; border-radius: 10px; background: var(--bg); margin-bottom: 8px;
+}
+.backup-status-label { font-size: 13px; color: var(--text-light); }
+.backup-status-value { font-size: 13px; font-weight: 700; }
+.backup-history { margin-top: 12px; }
+.backup-history-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px; border-bottom: 1px solid #f5f5f5; font-size: 13px;
+}
+.backup-success-msg {
+  background: var(--green-bg); color: var(--green-dark); padding: 12px 18px;
+  border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 12px;
+  animation: fadeIn .3s;
+}
+.backup-error-msg {
+  background: var(--red-bg); color: var(--red-dark); padding: 12px 18px;
+  border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 12px;
+  animation: fadeIn .3s;
+}
+
+/* ─── Backup reminder banner ─── */
+.backup-reminder {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff; padding: 12px 20px; display: flex; justify-content: space-between;
+  align-items: center; font-size: 13px; font-weight: 500;
+  animation: slideDown .3s;
+}
+.backup-reminder button {
+  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+  color: #fff; padding: 6px 16px; border-radius: 8px; font-size: 12px;
+  font-weight: 700; cursor: pointer; font-family: inherit; margin-left: 10px;
+}
+.backup-reminder .close-reminder {
+  background: none; border: none; color: rgba(255,255,255,0.6);
+  font-size: 18px; cursor: pointer; padding: 0 4px;
+}
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ─── File input hidden ─── */
+.file-input-hidden { display: none; }
+
+@media (max-width: 768px) {
+  .header { padding: 14px 18px; }
+  .main { padding: 16px; }
+  .stats-row { gap: 10px; }
+  .stat-card { min-width: 140px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .nav { padding: 0 12px; }
+  .nav-btn { padding: 12px 14px; font-size: 12.5px; }
+  .client-grid { grid-template-columns: 1fr; }
+  .invoice-header { flex-direction: column; align-items: flex-start; }
+  .backup-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef } = React;
+
+const URSSAF_RATE = 0.22;
+const TVA_THRESHOLD = 36800;
+const TVA_RATE = 0.20;
+const BACKUP_REMINDER_DAYS = 7;
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+const fmt = (n) => new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(n);
+const fmtDate = (d) => new Date(d).toLocaleDateString("fr-FR");
+const fmtDateTime = (d) => new Date(d).toLocaleString("fr-FR");
+const today = () => new Date().toISOString().slice(0, 10);
+const nowISO = () => new Date().toISOString();
+const addBusinessDays = (date, days) => {
+  const d = new Date(date);
+  let added = 0;
+  while (added < days) { d.setDate(d.getDate() + 1); if (d.getDay() !== 0 && d.getDay() !== 6) added++; }
+  return d.toISOString().slice(0, 10);
+};
+const daysDiff = (a, b) => Math.ceil((new Date(b) - new Date(a)) / 86400000);
+
+const CATEGORIES = ["Matériel & Outils","Transport & Déplacement","Fournitures","Sous-traitance","Assurance","Téléphone & Internet","Logiciel & Abonnement","Formation","Repas & Restaurant","Autre"];
+const STATUS_LABELS = { brouillon:"Brouillon", envoyee:"Envoyée", payee:"Payée", en_retard:"En retard", annulee:"Annulée" };
+const MONTHS_SHORT = ["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"];
+const MONTHS_FULL = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
+
+function load(key, fb) { try { return JSON.parse(localStorage.getItem(key)) || fb; } catch { return fb; } }
+function save(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+
+function Badge({ status }) {
+  return <span className={`badge badge-${status}`}>{STATUS_LABELS[status] || status}</span>;
+}
+
+function Modal({ open, onClose, title, children }) {
+  if (!open) return null;
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">{title}</h3>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─── BACKUP SYSTEM ───
+function Sauvegarde({ invoices, expenses, clients, setInvoices, setExpenses, setClients }) {
+  const [msg, setMsg] = useState(null);
+  const [backupHistory, setBackupHistory] = useState(() => load("abdridi_backup_history", []));
+  const fileInputRef = useRef(null);
+
+  const dataStats = {
+    factures: invoices.length,
+    depenses: expenses.length,
+    clients: clients.length,
+    lastBackup: backupHistory.length > 0 ? backupHistory[0].date : null,
+  };
+
+  const doExport = () => {
+    const data = {
+      version: "1.0",
+      exportDate: nowISO(),
+      app: "AB DRIDI Comptabilité",
+      data: { invoices, expenses, clients }
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dateStr = today().replace(/-/g, "");
+    a.href = url;
+    a.download = `sauvegarde-ab-dridi-${dateStr}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const entry = { date: nowISO(), type: "export", items: invoices.length + expenses.length + clients.length };
+    const newHistory = [entry, ...backupHistory].slice(0, 20);
+    setBackupHistory(newHistory);
+    save("abdridi_backup_history", newHistory);
+    save("abdridi_last_backup", nowISO());
+    setMsg({ type: "success", text: `Sauvegarde exportée avec succès ! (${invoices.length} factures, ${expenses.length} dépenses, ${clients.length} clients)` });
+    setTimeout(() => setMsg(null), 5000);
+  };
+
+  const doImport = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.data || !data.data.invoices || !data.data.expenses || !data.data.clients) {
+          setMsg({ type: "error", text: "Fichier invalide. Le format n'est pas reconnu." });
+          setTimeout(() => setMsg(null), 5000);
+          return;
+        }
+        if (!confirm(`Voulez-vous restaurer cette sauvegarde ?\n\n📄 ${data.data.invoices.length} factures\n💸 ${data.data.expenses.length} dépenses\n👥 ${data.data.clients.length} clients\n\n⚠️ Cela remplacera toutes vos données actuelles.`)) return;
+
+        setInvoices(data.data.invoices);
+        setExpenses(data.data.expenses);
+        setClients(data.data.clients);
+        save("abdridi_invoices", data.data.invoices);
+        save("abdridi_expenses", data.data.expenses);
+        save("abdridi_clients", data.data.clients);
+
+        const entry = { date: nowISO(), type: "import", items: data.data.invoices.length + data.data.expenses.length + data.data.clients.length };
+        const newHistory = [entry, ...backupHistory].slice(0, 20);
+        setBackupHistory(newHistory);
+        save("abdridi_backup_history", newHistory);
+        save("abdridi_last_backup", nowISO());
+
+        setMsg({ type: "success", text: `Restauration réussie ! ${data.data.invoices.length} factures, ${data.data.expenses.length} dépenses, ${data.data.clients.length} clients chargés.` });
+        setTimeout(() => setMsg(null), 5000);
+      } catch (err) {
+        setMsg({ type: "error", text: "Erreur de lecture du fichier. Vérifiez qu'il s'agit bien d'une sauvegarde AB DRIDI." });
+        setTimeout(() => setMsg(null), 5000);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const doReset = () => {
+    if (!confirm("⚠️ ATTENTION : Cette action va supprimer TOUTES vos données (factures, dépenses, clients).\n\nÊtes-vous sûr ?")) return;
+    if (!confirm("Dernière confirmation : toutes les données seront perdues définitivement. Continuer ?")) return;
+    setInvoices([]);
+    setExpenses([]);
+    setClients([]);
+    save("abdridi_invoices", []);
+    save("abdridi_expenses", []);
+    save("abdridi_clients", []);
+    setMsg({ type: "success", text: "Toutes les données ont été réinitialisées." });
+    setTimeout(() => setMsg(null), 5000);
+  };
+
+  return (
+    <div>
+      <div className="backup-grid">
+        {/* Export */}
+        <div className="card backup-card">
+          <div className="backup-icon">💾</div>
+          <div className="backup-title">Exporter une sauvegarde</div>
+          <div className="backup-desc">
+            Télécharge un fichier JSON contenant toutes tes données.
+            Conserve ce fichier en lieu sûr (Google Drive, clé USB, email...).
+          </div>
+          <button className="btn btn-primary" onClick={doExport} style={{width:"100%",justifyContent:"center"}}>
+            ⬇️ Télécharger la sauvegarde
+          </button>
+        </div>
+
+        {/* Import */}
+        <div className="card backup-card">
+          <div className="backup-icon">📂</div>
+          <div className="backup-title">Restaurer une sauvegarde</div>
+          <div className="backup-desc">
+            Charge un fichier de sauvegarde pour restaurer tes données.
+            Utile si tu changes de PC ou de navigateur.
+          </div>
+          <input type="file" accept=".json" className="file-input-hidden" ref={fileInputRef} onChange={doImport} />
+          <button className="btn btn-success" onClick={() => fileInputRef.current.click()} style={{width:"100%",justifyContent:"center"}}>
+            ⬆️ Charger une sauvegarde
+          </button>
+        </div>
+      </div>
+
+      {msg && <div className={msg.type === "success" ? "backup-success-msg" : "backup-error-msg"}>{msg.text}</div>}
+
+      {/* Stats */}
+      <div className="card" style={{marginTop: 20, marginBottom: 20}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>État de tes données</div>
+        <div className="backup-status">
+          <div className="backup-status-item">
+            <span className="backup-status-label">📄 Factures enregistrées</span>
+            <span className="backup-status-value">{dataStats.factures}</span>
+          </div>
+          <div className="backup-status-item">
+            <span className="backup-status-label">💸 Dépenses enregistrées</span>
+            <span className="backup-status-value">{dataStats.depenses}</span>
+          </div>
+          <div className="backup-status-item">
+            <span className="backup-status-label">👥 Clients enregistrés</span>
+            <span className="backup-status-value">{dataStats.clients}</span>
+          </div>
+          <div className="backup-status-item">
+            <span className="backup-status-label">🕐 Dernière sauvegarde</span>
+            <span className="backup-status-value" style={{color: dataStats.lastBackup ? "var(--green)" : "var(--red)"}}>
+              {dataStats.lastBackup ? fmtDateTime(dataStats.lastBackup) : "Jamais"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* History */}
+      {backupHistory.length > 0 && (
+        <div className="card" style={{marginBottom:20}}>
+          <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>Historique des sauvegardes</div>
+          {backupHistory.map((h, i) => (
+            <div key={i} className="backup-history-item">
+              <span>{h.type === "export" ? "⬇️ Export" : "⬆️ Import"} — {h.items} élément(s)</span>
+              <span style={{color:"var(--text-muted)"}}>{fmtDateTime(h.date)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Danger zone */}
+      <div className="card" style={{border:"1.5px solid var(--red)", background:"#fffafa"}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:8,color:"var(--red)"}}>⚠️ Zone danger</div>
+        <div style={{fontSize:13,color:"var(--text-light)",marginBottom:14}}>
+          Réinitialiser toutes les données. Cette action est irréversible. Fais une sauvegarde avant.
+        </div>
+        <button className="btn btn-danger btn-sm" onClick={doReset}>🗑 Réinitialiser toutes les données</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── DASHBOARD ───
+function Dashboard({ yearInvoices, yearExpenses, invoices, caHT, caEncaisse, totalDepenses, urssaf, beneficeNet, enAttente, nbRetard, progressTVA, tvaActive, year }) {
+  const monthlyCA = useMemo(() => {
+    const m = Array(12).fill(0);
+    yearInvoices.filter(i => i.status !== "annulee").forEach(i => { m[new Date(i.date).getMonth()] += i.totalHT || 0; });
+    return m;
+  }, [yearInvoices]);
+  const monthlyExp = useMemo(() => {
+    const m = Array(12).fill(0);
+    yearExpenses.forEach(e => { m[new Date(e.date).getMonth()] += e.montant || 0; });
+    return m;
+  }, [yearExpenses]);
+  const maxVal = Math.max(...monthlyCA, ...monthlyExp, 1);
+  const upcoming = useMemo(() =>
+    invoices.filter(i => i.status === "envoyee" || i.status === "en_retard")
+      .sort((a, b) => (a.echeance || "").localeCompare(b.echeance || "")).slice(0, 6), [invoices]);
+
+  return (
+    <div>
+      <div className="stats-row">
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">CA Facturé</div><div className="stat-value" style={{color:"var(--primary)"}}>{fmt(caHT)}</div><div className="stat-sub">{yearInvoices.length} facture(s)</div></div><div className="stat-icon">📈</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">CA Encaissé</div><div className="stat-value" style={{color:"var(--green)"}}>{fmt(caEncaisse)}</div><div className="stat-sub">Paiements reçus</div></div><div className="stat-icon">✅</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">En attente</div><div className="stat-value" style={{color: nbRetard > 0 ? "var(--red)" : "var(--orange)"}}>{fmt(enAttente)}</div><div className="stat-sub">{nbRetard > 0 ? `⚠️ ${nbRetard} en retard` : "À jour"}</div></div><div className="stat-icon">⏳</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">Dépenses</div><div className="stat-value" style={{color:"var(--pink)"}}>{fmt(totalDepenses)}</div><div className="stat-sub">{yearExpenses.length} opération(s)</div></div><div className="stat-icon">💸</div></div></div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
+        <div className="card">
+          <div className="stat-label">URSSAF (22%)</div>
+          <div style={{fontSize:28,fontWeight:800,color:"var(--pink)",marginBottom:4}}>{fmt(urssaf)}</div>
+          <div style={{fontSize:12,color:"var(--text-muted)"}}>Cotisations estimées sur le CA facturé</div>
+          <div style={{marginTop:14,fontSize:14,fontWeight:700,color: beneficeNet >= 0 ? "var(--green)" : "var(--red)"}}>Bénéfice net estimé : {fmt(beneficeNet)}</div>
+        </div>
+        <div className="card">
+          <div className="stat-label">Seuil TVA {tvaActive ? "⚠️ DÉPASSÉ" : ""}</div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:8}}>
+            <span style={{fontSize:22,fontWeight:800,color: tvaActive ? "var(--red)" : "var(--primary)"}}>{fmt(caHT)}</span>
+            <span style={{fontSize:13,color:"var(--text-muted)"}}>/ {fmt(TVA_THRESHOLD)}</span>
+          </div>
+          <div className="progress-bg"><div className="progress-fill" style={{width:`${progressTVA}%`, background: tvaActive ? "linear-gradient(90deg, var(--red), #ff6b81)" : "linear-gradient(90deg, var(--primary), var(--accent))"}} /></div>
+          <div style={{fontSize:12,color: tvaActive ? "var(--red)" : "var(--text-muted)",marginTop:6,fontWeight: tvaActive ? 700 : 400}}>{tvaActive ? "Vous devez facturer la TVA (20%)" : `Encore ${fmt(TVA_THRESHOLD - caHT)} avant le seuil`}</div>
+        </div>
+      </div>
+      <div className="card" style={{marginBottom:24}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:20}}>Revenus vs Dépenses — {year}</div>
+        <div className="chart-container">
+          {MONTHS_SHORT.map((m, i) => (
+            <div key={m} className="chart-col">
+              <div className="chart-bars">
+                <div className="chart-bar chart-bar-income" style={{height:`${(monthlyCA[i]/maxVal)*100}%`, minHeight: monthlyCA[i] > 0 ? 4 : 0}} title={`CA: ${fmt(monthlyCA[i])}`} />
+                <div className="chart-bar chart-bar-expense" style={{height:`${(monthlyExp[i]/maxVal)*100}%`, minHeight: monthlyExp[i] > 0 ? 4 : 0}} title={`Dép: ${fmt(monthlyExp[i])}`} />
+              </div>
+              <div className="chart-label">{m}</div>
+            </div>
+          ))}
+        </div>
+        <div className="chart-legend">
+          <div className="chart-legend-item"><div className="chart-legend-dot" style={{background:"var(--primary)"}} /> Revenus</div>
+          <div className="chart-legend-item"><div className="chart-legend-dot" style={{background:"var(--pink)"}} /> Dépenses</div>
+        </div>
+      </div>
+      {upcoming.length > 0 && (
+        <div className="card">
+          <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>Paiements en attente</div>
+          {upcoming.map(inv => {
+            const dl = daysDiff(today(), inv.echeance);
+            return (
+              <div key={inv.id} className={`payment-row ${dl < 0 ? 'late' : 'ok'}`}>
+                <div><div className="payment-name">{inv.numero} — {inv.client}</div><div className="payment-due">Échéance : {fmtDate(inv.echeance)}</div></div>
+                <div style={{textAlign:"right"}}><div className="payment-amount">{fmt(inv.totalHT)}</div><div className={`payment-days ${dl < 0 ? 'late' : ''}`}>{dl < 0 ? `${Math.abs(dl)}j de retard` : `${dl}j restant(s)`}</div></div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── FACTURES ───
+function Factures({ invoices, setInvoices, clients, tvaActive, caHT }) {
+  const [showModal, setShowModal] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [filter, setFilter] = useState("toutes");
+  const initForm = { client:"", description:"", lignes:[{desc:"",qty:1,pu:0}], delai:"30", date:today(), applyTVA:false };
+  const [form, setForm] = useState(initForm);
+
+  const openNew = () => { setForm({...initForm, applyTVA: tvaActive}); setEditId(null); setShowModal(true); };
+  const openEdit = (inv) => {
+    setForm({ client:inv.client, description:inv.description||"", lignes:inv.lignes||[{desc:inv.description,qty:1,pu:inv.totalHT}], delai:String(inv.delaiJours||30), date:inv.date, applyTVA:inv.tvaApplied||false });
+    setEditId(inv.id); setShowModal(true);
+  };
+  const saveInvoice = () => {
+    const totalHT = form.lignes.reduce((s,l) => s + l.qty * l.pu, 0);
+    const tva = form.applyTVA ? totalHT * TVA_RATE : 0;
+    const totalTTC = totalHT + tva;
+    const delaiJours = parseInt(form.delai) || 30;
+    const echeance = addBusinessDays(form.date, delaiJours);
+    if (editId) {
+      setInvoices(prev => prev.map(i => i.id === editId ? {...i, client:form.client, description:form.description, lignes:form.lignes, totalHT, tva, totalTTC, tvaApplied:form.applyTVA, date:form.date, delaiJours, echeance} : i));
+    } else {
+      const num = `FAC-${String(invoices.length+1).padStart(4,"0")}`;
+      setInvoices(prev => [...prev, {id:uid(), numero:num, client:form.client, description:form.description, lignes:form.lignes, totalHT, tva, totalTTC, tvaApplied:form.applyTVA, date:form.date, delaiJours, echeance, status:"brouillon", datePaiement:null}]);
+    }
+    setShowModal(false);
+  };
+  const updateStatus = (id, status) => setInvoices(prev => prev.map(i => i.id === id ? {...i, status, datePaiement: status === "payee" ? today() : i.datePaiement} : i));
+  const deleteInvoice = (id) => { if(confirm("Supprimer cette facture ?")) setInvoices(prev => prev.filter(i => i.id !== id)); };
+  const filtered = filter === "toutes" ? invoices : invoices.filter(i => i.status === filter);
+  const formTotalHT = form.lignes.reduce((s,l) => s + l.qty * l.pu, 0);
+  const formTVA = form.applyTVA ? formTotalHT * TVA_RATE : 0;
+  const addLigne = () => setForm(f => ({...f, lignes:[...f.lignes, {desc:"",qty:1,pu:0}]}));
+  const removeLigne = (idx) => setForm(f => ({...f, lignes:f.lignes.filter((_,i) => i !== idx)}));
+  const updateLigne = (idx, key, val) => setForm(f => ({...f, lignes:f.lignes.map((l,i) => i === idx ? {...l,[key]:val} : l)}));
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
+        <div className="filters">
+          {["toutes","brouillon","envoyee","payee","en_retard","annulee"].map(f => (
+            <button key={f} className={`filter-btn ${filter===f?"active":""}`} onClick={() => setFilter(f)}>{f === "toutes" ? "Toutes" : STATUS_LABELS[f]}</button>
+          ))}
+        </div>
+        <button className="btn btn-primary" onClick={openNew}>+ Nouvelle facture</button>
+      </div>
+      {tvaActive && <div className="tva-warning">⚠️ Seuil TVA dépassé ({fmt(caHT)}) — Vos prochaines factures doivent inclure 20% de TVA.</div>}
+      {filtered.length === 0 ? (
+        <div className="card empty"><div className="empty-icon">📄</div><div>Aucune facture trouvée</div></div>
+      ) : (
+        filtered.sort((a,b) => (b.date||"").localeCompare(a.date||"")).map(inv => (
+          <div key={inv.id} className="card invoice-card">
+            <div className="invoice-header">
+              <div className="invoice-left">
+                <div style={{marginBottom:4}}><span className="invoice-num">{inv.numero}</span><Badge status={inv.status} /></div>
+                <div className="invoice-client">{inv.client}</div>
+                <div className="invoice-meta">{fmtDate(inv.date)} • Délai : {inv.delaiJours}j ouvrés • Éch. : {fmtDate(inv.echeance)}{inv.tvaApplied ? " • TVA 20%" : ""}</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div className="invoice-amount">{fmt(inv.totalTTC || inv.totalHT)}</div>
+                {inv.tvaApplied && <div className="invoice-amount-detail">HT: {fmt(inv.totalHT)} • TVA: {fmt(inv.tva)}</div>}
+              </div>
+            </div>
+            <div className="invoice-actions">
+              {inv.status === "brouillon" && <button className="btn btn-secondary btn-sm" onClick={() => updateStatus(inv.id,"envoyee")}>📤 Envoyée</button>}
+              {(inv.status === "envoyee" || inv.status === "en_retard") && <button className="btn btn-success btn-sm" onClick={() => updateStatus(inv.id,"payee")}>✅ Payée</button>}
+              {inv.status !== "annulee" && inv.status !== "payee" && <button className="btn btn-secondary btn-sm" onClick={() => updateStatus(inv.id,"annulee")}>🚫 Annuler</button>}
+              <button className="btn btn-secondary btn-sm" onClick={() => openEdit(inv)}>✏️ Modifier</button>
+              <button className="btn btn-danger btn-sm" onClick={() => deleteInvoice(inv.id)}>🗑</button>
+            </div>
+          </div>
+        ))
+      )}
+      <Modal open={showModal} onClose={() => setShowModal(false)} title={editId ? "Modifier la facture" : "Nouvelle facture"}>
+        <div className="form-grid">
+          <div className="form-group">
+            {clients.length > 0 ? (
+              <><label className="form-label">Client</label><select className="form-select" value={form.client} onChange={e => setForm(f => ({...f, client:e.target.value}))}><option value="">— Sélectionner —</option>{clients.map(c => <option key={c.id} value={c.nom}>{c.nom}</option>)}</select></>
+            ) : (
+              <><label className="form-label">Client</label><input className="form-input" value={form.client} onChange={e => setForm(f => ({...f, client:e.target.value}))} placeholder="Nom du client" /></>
+            )}
+          </div>
+          <div className="form-group"><label className="form-label">Date</label><input className="form-input" type="date" value={form.date} onChange={e => setForm(f => ({...f, date:e.target.value}))} /></div>
+        </div>
+        <div className="form-grid">
+          <div className="form-group"><label className="form-label">Délai de paiement</label>
+            <select className="form-select" value={form.delai} onChange={e => setForm(f => ({...f, delai:e.target.value}))}>
+              <option value="0">Comptant</option><option value="15">15 jours ouvrés</option><option value="30">30 jours ouvrés</option><option value="45">45 jours ouvrés</option><option value="60">60 jours ouvrés</option>
+            </select>
+          </div>
+          <div className="checkbox-row"><input type="checkbox" id="tvaCheck" checked={form.applyTVA} onChange={e => setForm(f => ({...f, applyTVA:e.target.checked}))} /><label htmlFor="tvaCheck">Appliquer TVA 20%</label></div>
+        </div>
+        <div className="form-group"><label className="form-label">Description (optionnel)</label><input className="form-input" value={form.description} onChange={e => setForm(f => ({...f, description:e.target.value}))} placeholder="Description" /></div>
+        <div className="form-group">
+          <label className="form-label">Lignes de facturation</label>
+          {form.lignes.map((l, i) => (
+            <div key={i} className="ligne-row">
+              <input className="ligne-input ligne-desc" placeholder="Description" value={l.desc} onChange={e => updateLigne(i,"desc",e.target.value)} />
+              <input className="ligne-input ligne-num" type="number" placeholder="Qté" value={l.qty} onChange={e => updateLigne(i,"qty",Number(e.target.value))} min="1" />
+              <input className="ligne-input ligne-num" type="number" placeholder="P.U. €" value={l.pu || ""} onChange={e => updateLigne(i,"pu",Number(e.target.value))} min="0" step="0.01" />
+              <span className="ligne-total">{fmt(l.qty * l.pu)}</span>
+              {form.lignes.length > 1 && <button className="ligne-del" onClick={() => removeLigne(i)}>✕</button>}
+            </div>
+          ))}
+          <button className="add-ligne-btn" onClick={addLigne}>+ Ajouter une ligne</button>
+        </div>
+        <div className="totals-box">
+          <div className="totals-row"><span>Total HT</span><span style={{fontWeight:700}}>{fmt(formTotalHT)}</span></div>
+          {form.applyTVA && <div className="totals-row"><span>TVA (20%)</span><span style={{fontWeight:700}}>{fmt(formTVA)}</span></div>}
+          <div className="totals-row totals-total"><span>Total TTC</span><span>{fmt(formTotalHT + formTVA)}</span></div>
+        </div>
+        <div className="form-actions"><button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button><button className="btn btn-primary" onClick={saveInvoice} disabled={!form.client || formTotalHT <= 0}>Enregistrer</button></div>
+      </Modal>
+    </div>
+  );
+}
+
+// ─── DEPENSES ───
+function Depenses({ expenses, setExpenses }) {
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({description:"",montant:"",categorie:CATEGORIES[0],date:today(),notes:""});
+  const doSave = () => {
+    setExpenses(prev => [...prev, {id:uid(), ...form, montant:Number(form.montant)}]);
+    setShowModal(false); setForm({description:"",montant:"",categorie:CATEGORIES[0],date:today(),notes:""});
+  };
+  const del = (id) => { if(confirm("Supprimer ?")) setExpenses(prev => prev.filter(e => e.id !== id)); };
+  const byCategory = useMemo(() => {
+    const m = {}; expenses.forEach(e => { m[e.categorie] = (m[e.categorie]||0) + e.montant; });
+    return Object.entries(m).sort((a,b) => b[1] - a[1]);
+  }, [expenses]);
+  const total = expenses.reduce((s,e) => s + e.montant, 0);
+  const maxCat = byCategory.length > 0 ? byCategory[0][1] : 1;
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div style={{fontSize:13,color:"var(--text-muted)"}}>Total : <strong style={{color:"var(--pink)",fontSize:18}}>{fmt(total)}</strong></div>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Nouvelle dépense</button>
+      </div>
+      {byCategory.length > 0 && (
+        <div className="card" style={{marginBottom:20}}>
+          <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>Répartition par catégorie</div>
+          {byCategory.map(([cat, val]) => (
+            <div key={cat} style={{marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",fontSize:13,marginBottom:4}}><span style={{fontWeight:600}}>{cat}</span><span style={{color:"var(--text-light)"}}>{fmt(val)} ({total > 0 ? Math.round(val/total*100) : 0}%)</span></div>
+              <div className="cat-bar-bg"><div className="cat-bar-fill" style={{width:`${(val/maxCat)*100}%`}} /></div>
+            </div>
+          ))}
+        </div>
+      )}
+      {expenses.length === 0 ? (
+        <div className="card empty"><div className="empty-icon">💸</div><div>Aucune dépense enregistrée</div></div>
+      ) : (
+        expenses.sort((a,b) => (b.date||"").localeCompare(a.date||"")).map(e => (
+          <div key={e.id} className="card" style={{padding:"14px 20px",marginBottom:8}}>
+            <div className="expense-row">
+              <div><div className="expense-desc">{e.description}</div><div className="expense-meta">{fmtDate(e.date)} • {e.categorie}</div>{e.notes && <div className="expense-meta" style={{marginTop:2}}>{e.notes}</div>}</div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}><span className="expense-amount">-{fmt(e.montant)}</span><button className="del-btn" onClick={() => del(e.id)}>🗑</button></div>
+            </div>
+          </div>
+        ))
+      )}
+      <Modal open={showModal} onClose={() => setShowModal(false)} title="Nouvelle dépense">
+        <div className="form-group"><label className="form-label">Description</label><input className="form-input" value={form.description} onChange={e => setForm(f => ({...f, description:e.target.value}))} placeholder="Ex: Achat perceuse" /></div>
+        <div className="form-grid">
+          <div className="form-group"><label className="form-label">Montant (€)</label><input className="form-input" type="number" value={form.montant} onChange={e => setForm(f => ({...f, montant:e.target.value}))} min="0" step="0.01" /></div>
+          <div className="form-group"><label className="form-label">Date</label><input className="form-input" type="date" value={form.date} onChange={e => setForm(f => ({...f, date:e.target.value}))} /></div>
+        </div>
+        <div className="form-group"><label className="form-label">Catégorie</label><select className="form-select" value={form.categorie} onChange={e => setForm(f => ({...f, categorie:e.target.value}))}>{CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
+        <div className="form-group"><label className="form-label">Notes (optionnel)</label><input className="form-input" value={form.notes} onChange={e => setForm(f => ({...f, notes:e.target.value}))} placeholder="Détails" /></div>
+        <div className="form-actions"><button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button><button className="btn btn-primary" onClick={doSave} disabled={!form.description || !form.montant}>Enregistrer</button></div>
+      </Modal>
+    </div>
+  );
+}
+
+// ─── CLIENTS ───
+function Clients({ clients, setClients, invoices }) {
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({nom:"",email:"",tel:"",adresse:"",delaiDefaut:"30",notes:""});
+  const doSave = () => {
+    setClients(prev => [...prev, {id:uid(), ...form}]);
+    setShowModal(false); setForm({nom:"",email:"",tel:"",adresse:"",delaiDefaut:"30",notes:""});
+  };
+  const del = (id) => { if(confirm("Supprimer ce client ?")) setClients(prev => prev.filter(c => c.id !== id)); };
+  const clientStats = useMemo(() => {
+    const m = {};
+    clients.forEach(c => {
+      const ci = invoices.filter(i => i.client === c.nom);
+      const total = ci.filter(i => i.status !== "annulee").reduce((s,i) => s + (i.totalHT||0), 0);
+      const pending = ci.filter(i => i.status === "envoyee" || i.status === "en_retard").reduce((s,i) => s + (i.totalHT||0), 0);
+      const late = ci.filter(i => i.status === "en_retard").length;
+      const paid = ci.filter(i => i.status === "payee" && i.datePaiement && i.date);
+      const avgDelay = paid.length > 0 ? Math.round(paid.reduce((s,i) => s + daysDiff(i.date, i.datePaiement), 0) / paid.length) : null;
+      m[c.id] = {total, pending, late, count:ci.length, avgDelay};
+    });
+    return m;
+  }, [clients, invoices]);
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+        <div style={{fontSize:13,color:"var(--text-muted)"}}>{clients.length} client(s)</div>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Nouveau client</button>
+      </div>
+      {clients.length === 0 ? (
+        <div className="card empty"><div className="empty-icon">👥</div><div>Aucun client enregistré</div></div>
+      ) : (
+        <div className="client-grid">
+          {clients.map(c => {
+            const st = clientStats[c.id] || {};
+            return (
+              <div key={c.id} className="card">
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
+                  <div><div style={{fontWeight:800,fontSize:16,marginBottom:2}}>{c.nom}</div>{c.email && <div style={{fontSize:12,color:"var(--text-muted)"}}>{c.email}</div>}{c.tel && <div style={{fontSize:12,color:"var(--text-muted)"}}>{c.tel}</div>}</div>
+                  <button className="del-btn" onClick={() => del(c.id)}>🗑</button>
+                </div>
+                <div className="client-stat-grid">
+                  <div className="client-stat-box"><div className="client-stat-label">Total facturé</div><div className="client-stat-value" style={{color:"var(--primary)"}}>{fmt(st.total||0)}</div></div>
+                  <div className="client-stat-box"><div className="client-stat-label">En attente</div><div className="client-stat-value" style={{color: st.late > 0 ? "var(--red)" : "var(--orange)"}}>{fmt(st.pending||0)}</div></div>
+                  <div className="client-stat-box"><div className="client-stat-label">Factures</div><div className="client-stat-value">{st.count||0}</div></div>
+                  <div className="client-stat-box"><div className="client-stat-label">Délai moy.</div><div className="client-stat-value">{st.avgDelay != null ? `${st.avgDelay}j` : "—"}</div></div>
+                </div>
+                {c.adresse && <div style={{fontSize:11,color:"#aaa",marginTop:8}}>📍 {c.adresse}</div>}
+                {c.notes && <div style={{fontSize:11,color:"#aaa",marginTop:4}}>📝 {c.notes}</div>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <Modal open={showModal} onClose={() => setShowModal(false)} title="Nouveau client">
+        <div className="form-group"><label className="form-label">Nom / Entreprise</label><input className="form-input" value={form.nom} onChange={e => setForm(f => ({...f, nom:e.target.value}))} placeholder="Ex: Société Martin" /></div>
+        <div className="form-grid">
+          <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" value={form.email} onChange={e => setForm(f => ({...f, email:e.target.value}))} /></div>
+          <div className="form-group"><label className="form-label">Téléphone</label><input className="form-input" value={form.tel} onChange={e => setForm(f => ({...f, tel:e.target.value}))} /></div>
+        </div>
+        <div className="form-group"><label className="form-label">Adresse</label><input className="form-input" value={form.adresse} onChange={e => setForm(f => ({...f, adresse:e.target.value}))} /></div>
+        <div className="form-group"><label className="form-label">Délai de paiement par défaut</label>
+          <select className="form-select" value={form.delaiDefaut} onChange={e => setForm(f => ({...f, delaiDefaut:e.target.value}))}><option value="0">Comptant</option><option value="15">15 jours</option><option value="30">30 jours</option><option value="45">45 jours</option></select>
+        </div>
+        <div className="form-group"><label className="form-label">Notes</label><input className="form-input" value={form.notes} onChange={e => setForm(f => ({...f, notes:e.target.value}))} placeholder="Infos utiles" /></div>
+        <div className="form-actions"><button className="btn btn-secondary" onClick={() => setShowModal(false)}>Annuler</button><button className="btn btn-primary" onClick={doSave} disabled={!form.nom}>Enregistrer</button></div>
+      </Modal>
+    </div>
+  );
+}
+
+// ─── TRESORERIE ───
+function Tresorerie({ yearInvoices, yearExpenses, caEncaisse, enAttente, totalDepenses, urssaf, beneficeNet, invoices }) {
+  const paidInvoices = yearInvoices.filter(i => i.status === "payee");
+  const unpaidInvoices = (invoices || yearInvoices).filter(i => i.status === "envoyee" || i.status === "en_retard");
+  const monthlyCF = useMemo(() => {
+    return MONTHS_FULL.map((m, i) => {
+      const income = paidInvoices.filter(inv => new Date(inv.datePaiement || inv.date).getMonth() === i).reduce((s, inv) => s + (inv.totalHT||0), 0);
+      const expense = yearExpenses.filter(e => new Date(e.date).getMonth() === i).reduce((s, e) => s + (e.montant||0), 0);
+      return {month: m.slice(0,3), income, expense, net: income - expense};
+    });
+  }, [paidInvoices, yearExpenses]);
+
+  return (
+    <div>
+      <div className="stats-row">
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">Encaissé</div><div className="stat-value" style={{color:"var(--green)"}}>{fmt(caEncaisse)}</div></div><div className="stat-icon">💰</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">En attente</div><div className="stat-value" style={{color:"var(--orange)"}}>{fmt(enAttente)}</div></div><div className="stat-icon">⏳</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">Dépenses</div><div className="stat-value" style={{color:"var(--pink)"}}>{fmt(totalDepenses)}</div></div><div className="stat-icon">📉</div></div></div>
+        <div className="card stat-card"><div className="stat-header"><div><div className="stat-label">URSSAF (22%)</div><div className="stat-value" style={{color:"var(--accent)"}}>{fmt(urssaf)}</div></div><div className="stat-icon">🏛</div></div></div>
+      </div>
+      <div className={`card result-banner ${beneficeNet >= 0 ? 'positive' : 'negative'}`}>
+        <div className="result-label" style={{color: beneficeNet >= 0 ? "var(--green-dark)" : "var(--red-dark)"}}>Résultat net estimé</div>
+        <div className="result-value" style={{color: beneficeNet >= 0 ? "var(--green-dark)" : "var(--red-dark)"}}>{fmt(beneficeNet)}</div>
+        <div className="result-detail" style={{color: beneficeNet >= 0 ? "#28a745" : "#dc3545"}}>= Encaissé ({fmt(caEncaisse)}) − Dépenses ({fmt(totalDepenses)}) − URSSAF ({fmt(caEncaisse * URSSAF_RATE)})</div>
+      </div>
+      <div className="card" style={{marginBottom:24}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>Flux de trésorerie mensuel</div>
+        <div style={{overflowX:"auto"}}>
+          <table className="cf-table">
+            <thead><tr><th style={{textAlign:"left",color:"var(--text-muted)"}}>Mois</th><th className="th-green">Entrées</th><th className="th-pink">Sorties</th><th>Solde</th></tr></thead>
+            <tbody>{monthlyCF.map((r, i) => (<tr key={i}><td>{r.month}</td><td style={{color:"var(--green)",fontWeight:600}}>{r.income > 0 ? fmt(r.income) : "—"}</td><td style={{color:"var(--pink)",fontWeight:600}}>{r.expense > 0 ? fmt(r.expense) : "—"}</td><td style={{fontWeight:700,color: r.net >= 0 ? "var(--green)" : "var(--red)"}}>{r.income > 0 || r.expense > 0 ? fmt(r.net) : "—"}</td></tr>))}</tbody>
+            <tfoot><tr><td>Total</td><td style={{color:"var(--green)"}}>{fmt(monthlyCF.reduce((s,r) => s + r.income, 0))}</td><td style={{color:"var(--pink)"}}>{fmt(monthlyCF.reduce((s,r) => s + r.expense, 0))}</td><td style={{color: beneficeNet >= 0 ? "var(--green)" : "var(--red)"}}>{fmt(monthlyCF.reduce((s,r) => s + r.net, 0))}</td></tr></tfoot>
+          </table>
+        </div>
+      </div>
+      {unpaidInvoices.length > 0 && (
+        <div className="card">
+          <div style={{fontSize:14,fontWeight:700,marginBottom:14}}>Créances en cours</div>
+          {unpaidInvoices.sort((a,b) => (a.echeance||"").localeCompare(b.echeance||"")).map(inv => {
+            const dl = daysDiff(today(), inv.echeance);
+            return (
+              <div key={inv.id} className={`payment-row ${dl < 0 ? 'late' : 'ok'}`}>
+                <div><span style={{fontWeight:700,marginRight:8}}>{inv.numero}</span><span style={{color:"var(--text-light)"}}>{inv.client}</span> <Badge status={inv.status} /></div>
+                <div style={{textAlign:"right"}}><div style={{fontWeight:700}}>{fmt(inv.totalHT)}</div><div style={{fontSize:11,color: dl < 0 ? "var(--red)" : "var(--text-muted)"}}>{dl < 0 ? `${Math.abs(dl)}j de retard` : `Éch. ${fmtDate(inv.echeance)}`}</div></div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── APP ───
+function App() {
+  const [tab, setTab] = useState("dashboard");
+  const [invoices, setInvoices] = useState(() => load("abdridi_invoices", []));
+  const [expenses, setExpenses] = useState(() => load("abdridi_expenses", []));
+  const [clients, setClients] = useState(() => load("abdridi_clients", []));
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [showReminder, setShowReminder] = useState(false);
+
+  useEffect(() => { save("abdridi_invoices", invoices); }, [invoices]);
+  useEffect(() => { save("abdridi_expenses", expenses); }, [expenses]);
+  useEffect(() => { save("abdridi_clients", clients); }, [clients]);
+
+  // Auto-detect late
+  useEffect(() => {
+    const now = today();
+    setInvoices(prev => prev.map(inv =>
+      inv.status === "envoyee" && inv.echeance && inv.echeance < now ? {...inv, status:"en_retard"} : inv
+    ));
+  }, [tab]);
+
+  // Backup reminder
+  useEffect(() => {
+    const lastBackup = localStorage.getItem("abdridi_last_backup");
+    if (!lastBackup) { setShowReminder(true); return; }
+    const daysSince = daysDiff(lastBackup, nowISO());
+    if (daysSince >= BACKUP_REMINDER_DAYS) setShowReminder(true);
+  }, []);
+
+  const yearInv = useMemo(() => invoices.filter(i => i.date?.startsWith(String(year))), [invoices, year]);
+  const yearExp = useMemo(() => expenses.filter(e => e.date?.startsWith(String(year))), [expenses, year]);
+  const caHT = useMemo(() => yearInv.filter(i => i.status !== "annulee").reduce((s,i) => s + (i.totalHT||0), 0), [yearInv]);
+  const caEncaisse = useMemo(() => yearInv.filter(i => i.status === "payee").reduce((s,i) => s + (i.totalHT||0), 0), [yearInv]);
+  const totalDep = useMemo(() => yearExp.reduce((s,e) => s + (e.montant||0), 0), [yearExp]);
+  const urssaf = caHT * URSSAF_RATE;
+  const beneficeNet = caEncaisse - totalDep - (caEncaisse * URSSAF_RATE);
+  const tvaActive = caHT > TVA_THRESHOLD;
+  const enAttente = useMemo(() => yearInv.filter(i => i.status === "envoyee" || i.status === "en_retard").reduce((s,i) => s + (i.totalHT||0), 0), [yearInv]);
+  const nbRetard = useMemo(() => invoices.filter(i => i.status === "en_retard").length, [invoices]);
+  const progressTVA = Math.min((caHT / TVA_THRESHOLD) * 100, 100);
+
+  const TABS = [{id:"dashboard",label:"Tableau de bord",icon:"📊"},{id:"factures",label:"Factures",icon:"📄"},{id:"depenses",label:"Dépenses",icon:"💸"},{id:"clients",label:"Clients",icon:"👥"},{id:"tresorerie",label:"Trésorerie",icon:"🏦"},{id:"sauvegarde",label:"Sauvegarde",icon:"💾"}];
+
+  return (
+    <div>
+      {/* Backup reminder */}
+      {showReminder && (
+        <div className="backup-reminder">
+          <span>💾 Pensez à faire une sauvegarde de vos données pour ne rien perdre !</span>
+          <div>
+            <button onClick={() => { setTab("sauvegarde"); setShowReminder(false); }}>Sauvegarder maintenant</button>
+            <button className="close-reminder" onClick={() => setShowReminder(false)}>✕</button>
+          </div>
+        </div>
+      )}
+
+      <header className="header">
+        <div className="header-left">
+          <div className="header-logo">AB</div>
+          <div><div className="header-title">AB DRIDI</div><div className="header-sub">MICRO-ENTREPRISE • COMPTABILITÉ</div></div>
+        </div>
+        <div className="header-right">
+          <span>Année :</span>
+          <select className="year-select" value={year} onChange={e => setYear(Number(e.target.value))}>
+            {[2024,2025,2026,2027].map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </div>
+      </header>
+
+      <nav className="nav">
+        {TABS.map(t => (
+          <button key={t.id} className={`nav-btn ${tab === t.id ? 'active' : ''}`} onClick={() => setTab(t.id)}>
+            <span style={{marginRight:6}}>{t.icon}</span>{t.label}
+            {t.id === "factures" && nbRetard > 0 && <span className="nav-badge">{nbRetard}</span>}
+          </button>
+        ))}
+      </nav>
+
+      <main className="main">
+        {tab === "dashboard" && <Dashboard yearInvoices={yearInv} yearExpenses={yearExp} invoices={invoices} caHT={caHT} caEncaisse={caEncaisse} totalDepenses={totalDep} urssaf={urssaf} beneficeNet={beneficeNet} enAttente={enAttente} nbRetard={nbRetard} progressTVA={progressTVA} tvaActive={tvaActive} year={year} />}
+        {tab === "factures" && <Factures invoices={invoices} setInvoices={setInvoices} clients={clients} tvaActive={tvaActive} caHT={caHT} />}
+        {tab === "depenses" && <Depenses expenses={expenses} setExpenses={setExpenses} />}
+        {tab === "clients" && <Clients clients={clients} setClients={setClients} invoices={invoices} />}
+        {tab === "tresorerie" && <Tresorerie yearInvoices={yearInv} yearExpenses={yearExp} caEncaisse={caEncaisse} enAttente={enAttente} totalDepenses={totalDep} urssaf={urssaf} beneficeNet={beneficeNet} invoices={invoices} />}
+        {tab === "sauvegarde" && <Sauvegarde invoices={invoices} expenses={expenses} clients={clients} setInvoices={setInvoices} setExpenses={setExpenses} setClients={setClients} />}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(<App />);
+</script>
+</body>
+</html>
